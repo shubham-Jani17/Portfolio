@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Portfolio Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            min-width: 300px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification-error {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-white">
+    <!-- Mobile Menu Toggle -->
+    <button id="menuToggle"
+        class="fixed top-5 left-5 z-50 lg:hidden w-12 h-12 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center text-white hover:bg-primary transition">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-70 z-40 hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="fixed left-0 top-0 w-64 h-screen bg-darker border-r border-slate-800 p-6 overflow-y-auto z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+        <div class="mb-10">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Admin
+                Panel</h2>
+        </div>
+
+        <ul class="space-y-2">
+            <li>
+                <a href="#" data-section="dashboard"
+                    class="menu-item active flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-home w-5"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="projects"
+                    class="menu-item flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-folder w-5"></i>
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="skills"
+                    class="menu-item flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-code w-5"></i>
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="inquiries"
+                    class="menu-item flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-envelope w-5"></i>
+                    <span>Inquiries</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="profile"
+                    class="menu-item flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-user w-5"></i>
+                    <span>Profile Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="social"
+                    class="menu-item flex items-center gap-3 px-4 py-3 text-gray-400 rounded-lg hover:bg-slate-800 hover:text-primary transition">
+                    <i class="fas fa-share-alt w-5"></i>
+                    <span>Social Links</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="lg:ml-64 p-4 lg:p-8 min-h-screen">
+        <!-- Top Bar -->
+        <div
+            class="bg-slate-800 rounded-2xl p-5 mb-8 border border-slate-700 flex flex-wrap items-center justify-between gap-4">
+            <h1 class="text-2xl lg:text-3xl font-bold">Welcome Back, Shubham!</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-400">Admin</span>
+                <div
+                    class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                <div
+                    class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-primary hover:-translate-y-1 transition">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-gray-400 text-sm font-medium">Total Projects</h3>
+                        <div
+                            class="w-10 h-10 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center text-primary">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="totalProjects">0</div>
+                    <div class="text-green-500 text-sm"><i class="fas fa-arrow-up"></i> Active portfolio items</div>
+                </div>
+
+                <div
+                    class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-secondary hover:-translate-y-1 transition">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-gray-400 text-sm font-medium">Skills</h3>
+                        <div
+                            class="w-10 h-10 bg-secondary bg-opacity-20 rounded-lg flex items-center justify-center text-secondary">
+                            <i class="fas fa-code"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="totalSkills">0</div>
+                    <div class="text-green-500 text-sm"><i class="fas fa-check"></i> Technologies listed</div>
+                </div>
+
+                <div
+                    class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-accent hover:-translate-y-1 transition">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-gray-400 text-sm font-medium">Inquiries</h3>
+                        <div
+                            class="w-10 h-10 bg-accent bg-opacity-20 rounded-lg flex items-center justify-center text-accent">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="totalInquiries">0</div>
+                    <div class="text-yellow-500 text-sm" id="unreadCount"><i class="fas fa-clock"></i> 0 unread</div>
+                </div>
+
+                <div
+                    class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500 hover:-translate-y-1 transition">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-gray-400 text-sm font-medium">Profile Status</h3>
+                        <div
+                            class="w-10 h-10 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center text-green-500">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1">100%</div>
+                    <div class="text-green-500 text-sm"><i class="fas fa-check"></i> Complete</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <h2 class="text-xl font-bold mb-6">Quick Actions</h2>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="showSection('projects'); openProjectModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Project
+                    </button>
+                    <button onclick="showSection('skills'); openSkillModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Skill
+                    </button>
+                    <button onclick="showSection('inquiries')"
+                        class="px-6 py-3 bg-transparent border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition">
+                        <i class="fas fa-envelope mr-2"></i>View Inquiries
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section hidden">
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold">Manage Projects</h2>
+                    <button onclick="openProjectModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Project
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-darker">
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">PROJECT NAME</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">TECHNOLOGIES</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">STATUS</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section hidden">
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold">Manage Skills</h2>
+                    <button onclick="openSkillModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Skill
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-darker">
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">SKILL NAME</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">DESCRIPTION</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">ICON</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="skillsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inquiries Section -->
+        <section id="inquiries" class="section hidden">
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold">Contact Inquiries</h2>
+                    <button onclick="markAllRead()"
+                        class="px-6 py-3 bg-transparent border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition">
+                        <i class="fas fa-check-double mr-2"></i>Mark All Read
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-darker">
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">NAME</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">EMAIL</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">MESSAGE</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">DATE</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">STATUS</th>
+                                <th class="text-left p-4 text-gray-400 text-sm font-semibold">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inquiriesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section hidden">
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
+                <form id="profileForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-2">Full Name</label>
+                            <input type="text" id="profileName" value="Shubham Jani"
+                                class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-2">Email</label>
+                            <input type="email" id="profileEmail" value="shubhamjani1731@gmail.com"
+                                class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2">Bio/Description</label>
+                        <textarea id="profileBio" rows="4"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition resize-y">Passionate software developer and problem solver. I love building creative projects and learning new technologies.</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-2">Subtitle Line 1</label>
+                            <input type="text" id="profileSubtitle1" value="Software Developer"
+                                class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-2">Subtitle Line 2</label>
+                            <input type="text" id="profileSubtitle2" value="Problem Solver"
+                                class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Social Section -->
+        <section id="social" class="section hidden">
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                <h2 class="text-2xl font-bold mb-6">Social Media Links</h2>
+                <form id="socialForm" class="space-y-6">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2"><i
+                                class="fab fa-github mr-2"></i>GitHub</label>
+                        <input type="url" id="socialGithub" value="https://github.com/shubham-Jani17"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2"><i
+                                class="fab fa-linkedin mr-2"></i>LinkedIn</label>
+                        <input type="url" id="socialLinkedin" value="https://linkedin.com"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2"><i
+                                class="fab fa-twitter mr-2"></i>Twitter</label>
+                        <input type="url" id="socialTwitter" placeholder="https://twitter.com/yourusername"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2"><i
+                                class="fas fa-globe mr-2"></i>Portfolio URL</label>
+                        <input type="url" id="socialPortfolio" placeholder="https://yourportfolio.com"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 hover:-translate-y-0.5 transition">
+                        <i class="fas fa-save mr-2"></i>Update Links
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="projectModalTitle" class="text-2xl font-bold">Add New Project</h3>
+                <button onclick="closeModal('projectModal')"
+                    class="w-8 h-8 bg-darker rounded-lg flex items-center justify-center hover:bg-red-500 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="projectForm" class="space-y-5">
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Project Name</label>
+                    <input type="text" id="projectName" required
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Description</label>
+                    <textarea id="projectDescription" required rows="4"
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition resize-y"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2">Icon Class (Font Awesome)</label>
+                        <input type="text" id="projectIcon" placeholder="fas fa-shopping-cart"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2">Status</label>
+                        <select id="projectStatus"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                            <option value="active">Active</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Technologies (comma separated)</label>
+                    <input type="text" id="projectTech" placeholder="React, Node.js, MongoDB"
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2">GitHub Link</label>
+                        <input type="url" id="projectGithub"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2">Live Demo Link</label>
+                        <input type="url" id="projectDemo"
+                            class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+                    <i class="fas fa-save mr-2"></i>Save Project
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Skill Modal -->
+    <div id="skillModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="skillModalTitle" class="text-2xl font-bold">Add New Skill</h3>
+                <button onclick="closeModal('skillModal')"
+                    class="w-8 h-8 bg-darker rounded-lg flex items-center justify-center hover:bg-red-500 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="skillForm" class="space-y-5">
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Skill Name</label>
+                    <input type="text" id="skillName" required
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Description</label>
+                    <textarea id="skillDescription" required rows="4"
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition resize-y"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Icon Class (Font Awesome)</label>
+                    <input type="text" id="skillIcon" placeholder="fab fa-html5" required
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition">
+                </div>
+
+                <button type="submit"
+                    class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+                    <i class="fas fa-save mr-2"></i>Save Skill
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inquiry Modal -->
+    <div id="inquiryModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Inquiry Details</h3>
+                <button onclick="closeModal('inquiryModal')"
+                    class="w-8 h-8 bg-darker rounded-lg flex items-center justify-center hover:bg-red-500 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Name</label>
+                    <input type="text" id="inquiryName" readonly
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white">
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="inquiryEmail" readonly
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white">
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Message</label>
+                    <textarea id="inquiryMessage" readonly rows="6"
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white resize-y"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Date</label>
+                    <input type="text" id="inquiryDate" readonly
+                        class="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg text-white">
+                </div>
+
+                <button onclick="markAsRead()"
+                    class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+                    <i class="fas fa-check mr-2"></i>Mark as Read
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../static/JS/admin.js
+    "></script>
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+    <script>
+        // Test notification on page load
+        setTimeout(() => {
+            console.log('Testing notification system...');
+        }, 1000);
+    </script>
+</body>
+
+</html>
